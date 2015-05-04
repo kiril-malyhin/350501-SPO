@@ -9,6 +9,12 @@
 #include <QIcon>
 #include <QString>
 #include <QStringData>
+#include <QDir>
+#include <QFileInfo>
+#include <QDebug>
+#include <QFileDialog>
+#include <QFileSystemWatcher>
+#include <QListWidgetItem>
 
 MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 {
@@ -30,6 +36,7 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
     start = new QPushButton("Старт");
     //start->setText(vall);
     start->setFixedSize(90,25);
+    start->setEnabled(false);
 
     stop = new QPushButton("Стоп");
     stop->setFixedSize(90,25);
@@ -102,7 +109,4 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 
 }
 
-void MyWindow::program()
-{
 
-}
