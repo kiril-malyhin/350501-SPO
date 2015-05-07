@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += \
     mywindow.cpp \
     mainwindow.cpp \
-    main.cpp
+    main.cpp \
+    monitor.cpp
 
 HEADERS  += \
     myWindow.h \
-    mainwindow.h
+    mainwindow.h \
+    monitor.h
 
 FORMS    += mainwindow.ui
 
