@@ -29,10 +29,10 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 
     data = new QListWidget;
 
-    path = new QLabel("<h2><font color = darkblue>Введите путь к папке или диску для слежения</font></h2>");
+    path = new QLabel("<h2><font color = darkblue>Введите путь к папке или диску для слежения:</font></h2>");
     enter_path = new QPushButton("Записать");
 
-    crit = new QLabel("<h2>Критерии отслеживания изменений</h2>");
+    crit = new QLabel("<h2>Критерии отслеживания изменений:</h2>");
 
     catalog = new QCheckBox("Включать подкаталоги");
     catalog->setChecked(true);
@@ -50,20 +50,20 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 
     change_file_name = new QCheckBox("Изменение имени файла");
     change_file_name->setChecked(true);
-    change_folder_name = new QCheckBox("Изменение имени папки");
-    change_folder_name->setChecked(true);
-    change_attribute = new QCheckBox("Изменение любого атрибута файла/папки");
-    change_attribute->setChecked(true);
+    change_directory_name = new QCheckBox("Изменение имени директории");
+    change_directory_name->setChecked(true);
+    change_attributes = new QCheckBox("Изменение любого атрибута файла/папки");
+    change_attributes->setChecked(true);
     change_size = new QCheckBox("Изменение размера файла/папки");
     change_size->setChecked(true);
-    change_time = new QCheckBox("Изменение времени доступа к файлу/папке");
-    change_time->setChecked(true);
-    change_sequrity_descriptor = new QCheckBox("Изменение содержимого дескриптора безопасности в наблюдаемой директории");
-    change_sequrity_descriptor->setChecked(true);
-    change_dir_name = new QCheckBox("Изменение времени записи");
-    change_dir_name->setChecked(true);
-    create_file_folder = new QCheckBox("Изменение времени создания файла/папки");
-    create_file_folder->setChecked(true);
+    change_last_write = new QCheckBox("Изменение времени доступа к файлу/папке");
+    change_last_write->setChecked(true);
+    change_last_access = new QCheckBox("Изменение времени записи");
+    change_last_access->setChecked(true);
+    change_creation = new QCheckBox("Изменение времени создания файла/папки");
+    change_creation->setChecked(true);
+    change_sequrity = new QCheckBox("Изменение содержимого дескриптора безопасности в наблюдаемой директории");
+    change_sequrity->setChecked(true);
 
     QHBoxLayout *layout_data = new QHBoxLayout;
     layout_data->addWidget(data);
@@ -88,13 +88,13 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 
     QVBoxLayout *end = new QVBoxLayout;
     end->addWidget(change_file_name);
-    end->addWidget(change_folder_name);
-    end->addWidget(create_file_folder);
-    end->addWidget(change_attribute);
+    end->addWidget(change_directory_name);
+    end->addWidget(change_attributes);
     end->addWidget(change_size);
-    end->addWidget(change_time);
-    end->addWidget(change_dir_name);
-    end->addWidget(change_sequrity_descriptor);
+    end->addWidget(change_last_write);
+    end->addWidget(change_last_access);
+    end->addWidget(change_creation);
+    end->addWidget(change_sequrity);
     end->addWidget(clear_window);
 
     QVBoxLayout *left = new QVBoxLayout;
@@ -122,6 +122,17 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
     connect(stop, SIGNAL(clicked()), this, SLOT(stopSlot()));
 
     monitor = new Monitor();
-    connect(monitor, &Monitor::notification, this, &MyWindow::notificationReceived);
 
+    connect(catalog, SIGNAL(toggled(bool)), monitor, SLOT(look_subdirs(bool)));
+    connect(change_file_name,SIGNAL(toggled(bool)), monitor, SLOT(change_file_nameSlot(bool)));
+    connect(change_directory_name, SIGNAL(toggled(bool)), monitor, SLOT(change_dir_nameSlot(bool)));
+    connect(change_attributes, SIGNAL(toggled(bool)), monitor, SLOT(change_attributesSlot(bool)));
+    connect(change_size, SIGNAL(toggled(bool)), monitor, SLOT(change_sizeSlot(bool)));
+    connect(change_last_write, SIGNAL(toggled(bool)), monitor, SLOT(change_last_writeSlot(bool)));
+    connect(change_last_access, SIGNAL(toggled(bool)), monitor, SLOT(change_last_accessSlot(bool)));
+    connect(change_creation, SIGNAL(toggled(bool)), monitor, SLOT(change_creationSlot(bool)));
+    connect(change_sequrity, SIGNAL(toggled(bool)), monitor, SLOT(change_sequritySlot(bool)));
+
+
+    connect(monitor, &Monitor::notification, this, &MyWindow::notificationReceived);
 }

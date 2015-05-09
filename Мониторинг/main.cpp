@@ -8,7 +8,7 @@
 #include <QTextEdit>
 #include <myWindow.h>
 #include <QMessageBox>
-#include <QDebug>
+#include <QDebug>z
 #include <QDir>
 #include <QString>
 #include <QFileInfo>
@@ -17,6 +17,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    //QApplication::setQuitOnLastWindowClosed(false);
     MyWindow *window = new MyWindow;
     window->show();
 

@@ -44,7 +44,7 @@ class MyWindow:public QDialog
 public:
     MyWindow(QWidget *parent=0);
     QString text;
-    bool Stop;
+    //bool Stop;
     QMimeData *data_to_file;
     QLabel *path;
     QLabel *crit;
@@ -55,17 +55,18 @@ public:
     QPushButton *start;
     QPushButton *stop;
     QPushButton *clear_window;
-    QCheckBox *change_file_name;
-    QCheckBox *change_folder_name;
-    QCheckBox *change_attribute;
-    QCheckBox *change_size;
-    QCheckBox *change_time;
-    QCheckBox *change_sequrity_descriptor;
-    QCheckBox *change_dir_name;
-    QCheckBox *create_file_folder;
 
-    QFile *myFile;
-    QTextStream myText;
+    QCheckBox *change_file_name;
+    QCheckBox *change_directory_name;
+    QCheckBox *change_attributes;
+    QCheckBox *change_size;
+    QCheckBox *change_last_write;
+    QCheckBox *change_last_access;
+    QCheckBox *change_creation;
+    QCheckBox *change_sequrity;
+
+   // QFile *myFile;
+   //QTextStream myText;
     QString str,str1;
     Monitor *monitor;
     QMutex mutex;
@@ -98,21 +99,22 @@ public slots:
 
             data->addItem("Ожидание изменений в заданной директории...");
 
+            //wchar_t filename;
+            monitor->MonitorPath(text);
+
             start->setEnabled(false);
             stop->setEnabled(true);
             enter_path->setEnabled(false);
             catalog->setEnabled(false);
-            create_file_folder->setEnabled(false);
+
             change_file_name->setEnabled(false);
-            change_folder_name->setEnabled(false);
-            change_attribute->setEnabled(false);
+            change_directory_name->setEnabled(false);
+            change_attributes->setEnabled(false);
             change_size->setEnabled(false);
-            change_time->setEnabled(false);
-            change_dir_name->setEnabled(false);
-            change_sequrity_descriptor->setEnabled(false);
-
-            monitor->MonitorPath(text);
-
+            change_last_write->setEnabled(false);
+            change_last_access->setEnabled(false);
+            change_creation->setEnabled(false);
+            change_sequrity->setEnabled(false);
 
         }
         else{ data->addItem("Ошибка открытия директории!");}
@@ -127,14 +129,15 @@ public slots:
         enter_path->setEnabled(true);
         stop->setEnabled(false);
         catalog->setEnabled(true);
-        create_file_folder->setEnabled(true);
+
         change_file_name->setEnabled(true);
-        change_folder_name->setEnabled(true);
-        change_attribute->setEnabled(true);
+        change_directory_name->setEnabled(true);
+        change_attributes->setEnabled(true);
         change_size->setEnabled(true);
-        change_time->setEnabled(true);
-        change_dir_name->setEnabled(true);
-        change_sequrity_descriptor->setEnabled(true);
+        change_last_write->setEnabled(true);
+        change_last_access->setEnabled(true);
+        change_creation->setEnabled(true);
+        change_sequrity->setEnabled(true);
     }
 
     void pathSlot()
@@ -146,12 +149,15 @@ public slots:
         stop->setEnabled(false);
         catalog->setEnabled(true);
         change_file_name->setEnabled(true);
-        change_folder_name->setEnabled(true);
-        change_attribute->setEnabled(true);
+        change_directory_name->setEnabled(true);
+        change_attributes->setEnabled(true);
         change_size->setEnabled(true);
-        change_time->setEnabled(true);
-        change_sequrity_descriptor->setEnabled(true);
+        change_last_write->setEnabled(true);
+        change_last_access->setEnabled(true);
+        change_creation->setEnabled(true);
+        change_sequrity->setEnabled(true);
         data->addItem("Путь к папке или диску:");
+
 
         if(text == NULL)
         {
@@ -172,14 +178,21 @@ public slots:
         data->clear();
     }
 
-    void notificationReceived(QString Status)
+    void notificationReceived(QString Status, QString Name)
     {
+        //qDebug() << Status;
+        //QListWidgetItem *res = new QListWidgetItem;
+        //res->setText(Status);
+        //res->setForeground(Qt::darkRed);
+        data->addItem(Status);
+        data->addItem(Name);
 
-        QListWidgetItem *res = new QListWidgetItem;
-        res->setText(Status);
-        res->setForeground(Qt::darkRed);
-        data->addItem(res);
 
+        //QString name = qgetenv(“USERNAME”);
+        //qDebug() << name;
+        //qUsername  = QString::fromLocal8Bit (qgetenv ("USERNAME").constData ()).toUtf8 ();
+        QString qUsername = QString::fromLocal8Bit(qgetenv("USERNAME").constData()).toUtf8();
+        //qDebug() << qUsername;
         QDate dateToday = QDate::currentDate();
         QString str;
         str = dateToday.toString("dd/MM/yyyy");
@@ -188,7 +201,7 @@ public slots:
         QTime timeToday = QTime::currentTime();
         str1 = timeToday.toString("hh:mm:ss\n");
 
-        QFile myFile("C:/Users/Kirill/Documents/MonitoringV-05/log.txt");
+        QFile myFile("log.txt");
 
         if (!myFile.open(QFile::WriteOnly | QFile::Text | QFile::Append)) //открываем файл
         {
@@ -197,7 +210,13 @@ public slots:
 
         QTextStream myText(&myFile);
 
+        myText << "User:  ";
+        myText << qUsername;
+        myText << "\n";
         myText << Status;
+        myText << "\n";
+        myText << "File:\t";
+        myText << Name;
         myText << "\n";
         myText << "Data:";
         myText << str;
