@@ -116,6 +116,8 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 
     setLayout(main);
     setWindowTitle("Мониторинг изменений файловой системы");
+
+
     connect(enter_path, SIGNAL(clicked()), this, SLOT(pathSlot()));
     connect(clear_window, SIGNAL(clicked()), this, SLOT(clearSlot()));
     connect(start, SIGNAL(clicked()), this, SLOT(startSlot()));
@@ -133,6 +135,8 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
     connect(change_creation, SIGNAL(toggled(bool)), monitor, SLOT(change_creationSlot(bool)));
     connect(change_sequrity, SIGNAL(toggled(bool)), monitor, SLOT(change_sequritySlot(bool)));
 
-
-    connect(monitor, &Monitor::notification, this, &MyWindow::notificationReceived);
+    //connect(monitor, &Monitor::notification, this, &MyWindow::notificationReceived);
+    //connect(monitor, &Monitor::notificationAction, this, &MyWindow::notificationReceived);
 }
+
+

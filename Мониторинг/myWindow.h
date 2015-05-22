@@ -20,8 +20,10 @@
 #include <QListWidgetItem>
 #include <QtTest/QtTest>
 #include <QFile>
+#include <QThread>
 #include "monitor.h"
-
+#include "mythread.h"
+#include "status.h"
 
 #include <stdlib.h>
 #include <tchar.h>
@@ -44,7 +46,6 @@ class MyWindow:public QDialog
 public:
     MyWindow(QWidget *parent=0);
     QString text;
-    //bool Stop;
     QMimeData *data_to_file;
     QLabel *path;
     QLabel *crit;
@@ -64,21 +65,19 @@ public:
     QCheckBox *change_last_access;
     QCheckBox *change_creation;
     QCheckBox *change_sequrity;
-
-   // QFile *myFile;
-   //QTextStream myText;
     QString str,str1;
     Monitor *monitor;
     QMutex mutex;
+    QThread *thread;
+    Status *status;
 
 private:
     QFileSystemWatcher *watcher;
 
 private slots:
 
+
 public slots:
-
-
 
     void startSlot()
     {
@@ -99,8 +98,13 @@ public slots:
 
             data->addItem("Ожидание изменений в заданной директории...");
 
-            //wchar_t filename;
-            monitor->MonitorPath(text);
+            thread = new QThread;
+            status = new Status(text);
+            status->moveToThread(thread);
+
+            connect(thread, SIGNAL(started()), status, SLOT(start()));
+            connect(status, SIGNAL(notification(QString)), this, SLOT(notificationReceived(QString)));
+            thread->start();
 
             start->setEnabled(false);
             stop->setEnabled(true);
@@ -178,21 +182,46 @@ public slots:
         data->clear();
     }
 
-    void notificationReceived(QString Status, QString Name)
+    void notificationReceived(QString Status)
     {
-        //qDebug() << Status;
-        //QListWidgetItem *res = new QListWidgetItem;
-        //res->setText(Status);
-        //res->setForeground(Qt::darkRed);
+
+        /*QListWidgetItem *res = new QListWidgetItem;
+        res->setText(Status);
+        res->setForeground(Qt::darkRed);
+        data->addItem(res);*/
         data->addItem(Status);
-        data->addItem(Name);
 
-
-        //QString name = qgetenv(“USERNAME”);
-        //qDebug() << name;
-        //qUsername  = QString::fromLocal8Bit (qgetenv ("USERNAME").constData ()).toUtf8 ();
         QString qUsername = QString::fromLocal8Bit(qgetenv("USERNAME").constData()).toUtf8();
-        //qDebug() << qUsername;
+
+        QFile myFile("log.txt");
+
+        if (!myFile.open(QFile::WriteOnly | QFile::Text | QFile::Append)) //открываем файл
+        {
+            return;
+        }
+
+        QTextStream myText(&myFile);
+
+        myText << "User:  ";
+        myText << qUsername;
+        myText << "\n";
+        myText << Status;
+        myText << "\n";
+
+    }
+    void notificationActionReceived(QString Action, QString Filename)
+    {
+
+        QListWidgetItem *wes = new QListWidgetItem;
+        wes->setText(Action);
+        wes->setForeground(Qt::blue);
+        data->addItem(wes);
+
+        QListWidgetItem *vik = new QListWidgetItem;
+        vik->setText(Filename);
+        vik->setForeground(Qt::green);
+        data->addItem(vik);
+
         QDate dateToday = QDate::currentDate();
         QString str;
         str = dateToday.toString("dd/MM/yyyy");
@@ -209,14 +238,10 @@ public slots:
         }
 
         QTextStream myText(&myFile);
-
-        myText << "User:  ";
-        myText << qUsername;
-        myText << "\n";
-        myText << Status;
+        myText << Action;
         myText << "\n";
         myText << "File:\t";
-        myText << Name;
+        myText << Filename;
         myText << "\n";
         myText << "Data:";
         myText << str;

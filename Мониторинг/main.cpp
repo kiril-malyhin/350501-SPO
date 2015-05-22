@@ -8,7 +8,7 @@
 #include <QTextEdit>
 #include <myWindow.h>
 #include <QMessageBox>
-#include <QDebug>z
+#include <QDebug>
 #include <QDir>
 #include <QString>
 #include <QFileInfo>

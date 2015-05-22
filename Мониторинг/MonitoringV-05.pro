@@ -16,12 +16,14 @@ SOURCES += \
     mywindow.cpp \
     mainwindow.cpp \
     main.cpp \
-    monitor.cpp
+    monitor.cpp \
+    status.cpp
 
 HEADERS  += \
     myWindow.h \
     mainwindow.h \
-    monitor.h
+    monitor.h \
+    status.h
 
 FORMS    += mainwindow.ui
 

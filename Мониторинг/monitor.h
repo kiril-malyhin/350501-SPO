@@ -14,7 +14,7 @@ public:
     void MonitorPath(QString path);
     wchar_t *getFileName(QString path);
 
-    wchar_t* convertCharArrayToLPCWSTR(const char* charArray);
+    //wchar_t* convertCharArrayToLPCWSTR(const char* charArray);
     //bool Stop;
     //QString fileName;
 
@@ -36,7 +36,8 @@ public:
     bool change_sequrity;
 
 signals:
-    void notification(QString, QString);
+    //void notification(QString);
+    //void notificationAction(QString, QString);
 
 public slots:
    void look_subdirs(bool);

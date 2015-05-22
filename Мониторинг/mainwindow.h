@@ -13,14 +13,14 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 private slots:
-    void showHide(QSystemTrayIcon::ActivationReason);
+    //void showHide(QSystemTrayIcon::ActivationReason);
 
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
 private:
-    QSystemTrayIcon *trIcon;
+    //QSystemTrayIcon *trIcon;
     Ui::MainWindow *ui;
 };
 
