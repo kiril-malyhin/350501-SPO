@@ -17,17 +17,20 @@ SOURCES += \
     mainwindow.cpp \
     main.cpp \
     monitor.cpp \
-    status.cpp
+    status.cpp \
+    name.cpp
 
 HEADERS  += \
     myWindow.h \
     mainwindow.h \
     monitor.h \
-    status.h
+    status.h \
+    name.h
 
 FORMS    += mainwindow.ui
 
 RESOURCES += \
-    Images.qrc
+    Images.qrc \
+    icon.qrc
 
 DISTFILES +=

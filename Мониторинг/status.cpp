@@ -11,10 +11,12 @@
 #include <locale.h>
 #include <tchar.h>
 
-Status::Status(QString path)
+Status::Status(QString text, bool subDirs, bool change_file_name, bool change_directory_name, bool change_attributes,
+               bool change_size, bool change_last_write, bool change_last_access, bool change_creation, bool change_sequrity)
 {
-    this->path = new QString;
-    this->path->append(path);
+    this->text = new QString;
+    this->text->append(text);
+
 }
 
 Status::~Status()
@@ -22,18 +24,10 @@ Status::~Status()
 
 }
 
-void Status::start(QString text,
-                   bool subDirs,
-                   bool change_file_name,
-                   bool change_directory_name,
-                   bool change_attributes,
-                   bool change_size,
-                   bool change_last_write,
-                   bool change_last_access,
-                   bool change_creation,
-                   bool change_sequrity){
+void Status::start(){
 
-    qDebug() << "Signal!";
+    qDebug() << "Signal status!";
+    QString text("C:/Qt");
     wchar_t *path;
     path = new wchar_t[1000];
     text.toWCharArray(path);
@@ -106,8 +100,16 @@ void Status::start(QString text,
 
     if (dwChangeHandles[7] == INVALID_HANDLE_VALUE)
         ExitProcess(GetLastError());
+    change_file_name = true;
+                       change_directory_name  = true;
+                       change_attributes = true;
+                       change_size = true;
+                       change_last_write = true;
+                       change_last_access = true;
+                       change_creation = true;
+                       change_sequrity = true;
 
-    while (TRUE)
+    while (TRUE)//C:/Qt
     {
 
         // Ждём уведомления.
@@ -124,7 +126,7 @@ void Status::start(QString text,
             {
 
                 status = "File was created, deleted or renamed!";
-                qDebug() << status;
+                //qDebug() << status;
             }
             if( FindNextChangeNotification(dwChangeHandles[0]) == FALSE )
                 ExitProcess(GetLastError());
@@ -136,7 +138,7 @@ void Status::start(QString text,
             {
 
                 status = "Directory was created, deleted or renamed!";
-                qDebug() << status;
+                //qDebug() << status;
 
             }
             if (FindNextChangeNotification(
@@ -150,7 +152,7 @@ void Status::start(QString text,
             {
 
                 status = "Attributes were changed!";
-                qDebug() << status;
+                //qDebug() << status;
             }
             if( FindNextChangeNotification(dwChangeHandles[2]) == FALSE )
                 ExitProcess(GetLastError());
@@ -160,9 +162,8 @@ void Status::start(QString text,
 
             if(change_size == true)
             {
-
                 status = "Size was changed!";
-                qDebug() << status;
+                //qDebug() << status;
             }
             if( FindNextChangeNotification(dwChangeHandles[3]) == FALSE )
                 ExitProcess(GetLastError());
@@ -174,7 +175,7 @@ void Status::start(QString text,
             {
 
                 status = "Last write time was changed!";
-                qDebug() << status;
+                //qDebug() << status;
             }
             if( FindNextChangeNotification(dwChangeHandles[4]) == FALSE )
                 ExitProcess(GetLastError());
@@ -184,9 +185,8 @@ void Status::start(QString text,
 
             if(change_last_access == true)
             {
-
                 status = "Last access was changed!";
-                qDebug() << status;
+                //qDebug() << status;
             }
             if( FindNextChangeNotification(dwChangeHandles[5]) == FALSE )
                 ExitProcess(GetLastError());
@@ -196,9 +196,8 @@ void Status::start(QString text,
 
             if(change_creation == true)
             {
-
                 status = "Creation time was changed!";
-                qDebug() << status;
+                //qDebug() << status;
             }
             if( FindNextChangeNotification(dwChangeHandles[6]) == FALSE )
                 ExitProcess(GetLastError());
@@ -210,7 +209,7 @@ void Status::start(QString text,
             {
 
                 status = "Sequrity descriptor was changed!";
-                qDebug() << status;
+                //qDebug() << status;
             }
             if( FindNextChangeNotification(dwChangeHandles[7]) == FALSE )
                 ExitProcess(GetLastError());
@@ -219,17 +218,10 @@ void Status::start(QString text,
         default:
             ExitProcess(GetLastError());
         }
-
         QString Status = status;
-
+        qDebug() << Status;
         emit notification(Status);
 
     }
 }
 
-wchar_t *convertCharArrayToLPCWSTR(const char* charArray)
-{
-    wchar_t* wString = new wchar_t[4096];
-    MultiByteToWideChar(CP_ACP, 0, charArray, -1, wString, 4096);
-    return wString;
-}

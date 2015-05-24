@@ -24,6 +24,7 @@
 #include "monitor.h"
 #include "mythread.h"
 #include "status.h"
+#include "name.h"
 
 #include <stdlib.h>
 #include <tchar.h>
@@ -58,7 +59,6 @@ public:
     QPushButton *clear_window;
 
     QCheckBox *change_file_name;
-    QCheckBox *change_directory_name;
     QCheckBox *change_attributes;
     QCheckBox *change_size;
     QCheckBox *change_last_write;
@@ -70,6 +70,8 @@ public:
     QMutex mutex;
     QThread *thread;
     Status *status;
+    QThread *threadName;
+    Name *name;
 
 private:
     QFileSystemWatcher *watcher;
@@ -98,13 +100,27 @@ public slots:
 
             data->addItem("Ожидание изменений в заданной директории...");
 
-            thread = new QThread;
-            status = new Status(text);
+
+            Status *status = new Status(path->text(), true,true,true,true,true,true,true,true,true);
+
+            QThread *thread = new QThread;
+
             status->moveToThread(thread);
 
             connect(thread, SIGNAL(started()), status, SLOT(start()));
             connect(status, SIGNAL(notification(QString)), this, SLOT(notificationReceived(QString)));
-            thread->start();
+            //thread->start();
+
+            Name *name = new Name(path->text(), true,true,true,true,true,true,true,true);
+
+            QThread *threadName = new QThread;
+
+            name->moveToThread(threadName);
+
+            connect(threadName, SIGNAL(started()), name, SLOT(start()));
+            connect(name, SIGNAL(notificationAction(QString,QString)), this, SLOT(notificationActionReceived(QString,QString)));
+
+            threadName->start();
 
             start->setEnabled(false);
             stop->setEnabled(true);
@@ -112,7 +128,7 @@ public slots:
             catalog->setEnabled(false);
 
             change_file_name->setEnabled(false);
-            change_directory_name->setEnabled(false);
+
             change_attributes->setEnabled(false);
             change_size->setEnabled(false);
             change_last_write->setEnabled(false);
@@ -127,15 +143,17 @@ public slots:
     void stopSlot()
     {
 
+        //thread->quit();
+        //threadName->quit();
+        //не работают галочки и путь,удалить поток, создать иконку в трее, конвертация и настроить файл
         data->addItem("Остановлено!");
-
         start->setEnabled(true);
         enter_path->setEnabled(true);
         stop->setEnabled(false);
         catalog->setEnabled(true);
 
         change_file_name->setEnabled(true);
-        change_directory_name->setEnabled(true);
+
         change_attributes->setEnabled(true);
         change_size->setEnabled(true);
         change_last_write->setEnabled(true);
@@ -153,7 +171,7 @@ public slots:
         stop->setEnabled(false);
         catalog->setEnabled(true);
         change_file_name->setEnabled(true);
-        change_directory_name->setEnabled(true);
+
         change_attributes->setEnabled(true);
         change_size->setEnabled(true);
         change_last_write->setEnabled(true);
@@ -185,11 +203,11 @@ public slots:
     void notificationReceived(QString Status)
     {
 
-        /*QListWidgetItem *res = new QListWidgetItem;
+        QListWidgetItem *res = new QListWidgetItem;
         res->setText(Status);
         res->setForeground(Qt::darkRed);
-        data->addItem(res);*/
-        data->addItem(Status);
+        data->addItem(res);
+        //data->addItem(Status);
 
         QString qUsername = QString::fromLocal8Bit(qgetenv("USERNAME").constData()).toUtf8();
 
@@ -209,9 +227,11 @@ public slots:
         myText << "\n";
 
     }
-    void notificationActionReceived(QString Action, QString Filename)
+    void notificationActionReceived(QString Action,QString Filename)
     {
 
+        qDebug() << Action;
+        qDebug() << Filename;
         QListWidgetItem *wes = new QListWidgetItem;
         wes->setText(Action);
         wes->setForeground(Qt::blue);
@@ -219,7 +239,7 @@ public slots:
 
         QListWidgetItem *vik = new QListWidgetItem;
         vik->setText(Filename);
-        vik->setForeground(Qt::green);
+        vik->setForeground(Qt::darkGreen);
         data->addItem(vik);
 
         QDate dateToday = QDate::currentDate();

@@ -4,18 +4,17 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QMainWindow>
-
+#include <QtGui>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    /*trIcon = new QSystemTrayIcon();  //инициализируем объект
-    trIcon->setIcon(QIcon(":/Images/31.ico"));  //устанавливаем иконку
-    trIcon->show();  //отображаем объект
+    createActions();
+    createTrayIcon();
+    trayIcon->show();
 
-    connect(trIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(showHide(QSystemTrayIcon::ActivationReason)));*/
 }
 
 MainWindow::~MainWindow()
@@ -23,42 +22,31 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-/*BOOL TrayMessage(HWND hDlg, DWORD dwMessage, UINT uID, HICON hIcon, PSTR pszTip)
+void MainWindow::closeEvent(QCloseEvent *event)
 {
-        BOOL res;
-
-    NOTIFYICONDATA tnd;
-
-    tnd.cbSize      = sizeof(NOTIFYICONDATA);
-    tnd.hWnd        = hDlg;
-    tnd.uID         = uID;
-
-    tnd.uFlags      = NIF_MESSAGE|NIF_ICON|NIF_TIP;
-    tnd.uCallbackMessage    = MYWM_NOTIFYICON;
-    tnd.hIcon       = hIcon;
-    if (pszTip)
+    if(trayIcon->isVisible())
     {
-        lstrcpyn(tnd.szTip, pszTip, sizeof(tnd.szTip));
+        hide();
+        event->ignore();
     }
-    else
-    {
-        tnd.szTip[0] = '\0';
-    }
+}
 
-    res = Shell_NotifyIcon(dwMessage, &tnd);
+void MainWindow::createActions()
+{
+    restoreAction = new QAction(tr("&restore"), this);
+    connect(restoreAction, SIGNAL(triggered()), this, SLOT(showNormal()));
+    quitAction = new QAction(tr("&exit"), this);
+    connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
+}
 
-    if (hIcon)
-        DestroyIcon(hIcon);
-
-    return res;
-}*/
-/*void MainWindow::showHide(QSystemTrayIcon::ActivationReason reason) {
-    if (reason==QSystemTrayIcon::Trigger)  //если нажато левой кнопкой продолжаем
-    if (!this->isVisible()) {  //если окно было не видимо - отображаем его
-        this->show();
-    } else {
-        this->hide();  //иначе скрываем
-    }
-}*/
-
-
+void MainWindow::createTrayIcon()
+{
+    //trayIconMenu = QMenu(this);
+    trayIconMenu->addAction(restoreAction);
+    trayIconMenu->addSeparator();
+    trayIconMenu->addAction(quitAction);
+    trayIcon = new QSystemTrayIcon(this);
+    QIcon icon(":/icon/123.png");
+    trayIcon->setIcon(icon);
+    trayIcon->setContextMenu(trayIconMenu);
+}

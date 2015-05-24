@@ -48,10 +48,8 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 
     clear_window = new QPushButton("Очистить окно вывода");
 
-    change_file_name = new QCheckBox("Изменение имени файла");
+    change_file_name = new QCheckBox("Изменение имени файла/папки");
     change_file_name->setChecked(true);
-    change_directory_name = new QCheckBox("Изменение имени директории");
-    change_directory_name->setChecked(true);
     change_attributes = new QCheckBox("Изменение любого атрибута файла/папки");
     change_attributes->setChecked(true);
     change_size = new QCheckBox("Изменение размера файла/папки");
@@ -88,7 +86,6 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 
     QVBoxLayout *end = new QVBoxLayout;
     end->addWidget(change_file_name);
-    end->addWidget(change_directory_name);
     end->addWidget(change_attributes);
     end->addWidget(change_size);
     end->addWidget(change_last_write);
@@ -127,7 +124,6 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 
     connect(catalog, SIGNAL(toggled(bool)), monitor, SLOT(look_subdirs(bool)));
     connect(change_file_name,SIGNAL(toggled(bool)), monitor, SLOT(change_file_nameSlot(bool)));
-    connect(change_directory_name, SIGNAL(toggled(bool)), monitor, SLOT(change_dir_nameSlot(bool)));
     connect(change_attributes, SIGNAL(toggled(bool)), monitor, SLOT(change_attributesSlot(bool)));
     connect(change_size, SIGNAL(toggled(bool)), monitor, SLOT(change_sizeSlot(bool)));
     connect(change_last_write, SIGNAL(toggled(bool)), monitor, SLOT(change_last_writeSlot(bool)));

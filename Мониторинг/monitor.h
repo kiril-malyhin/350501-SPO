@@ -11,18 +11,10 @@ public:
 
 
     ~Monitor();
-    void MonitorPath(QString path);
-    wchar_t *getFileName(QString path);
-
-    //wchar_t* convertCharArrayToLPCWSTR(const char* charArray);
-    //bool Stop;
-    //QString fileName;
 
     bool subDirs;
     bool change_file_name;
     //change_file_name= FILE_NOTIFY_CHANGE_FILE_NAME;
-    bool change_directory_name;
-    //change_directory_name = FILE_NOTIFY_CHANGE_DIR_NAME;
     bool change_attributes;
     //change_attributes = FILE_NOTIFY_CHANGE_ATTRIBUTES;
     bool change_size;
@@ -36,13 +28,11 @@ public:
     bool change_sequrity;
 
 signals:
-    //void notification(QString);
-    //void notificationAction(QString, QString);
+
 
 public slots:
    void look_subdirs(bool);
    void change_file_nameSlot(bool);
-   void change_dir_nameSlot(bool);
    void change_attributesSlot(bool);
    void change_sizeSlot(bool);
    void change_last_writeSlot(bool);
