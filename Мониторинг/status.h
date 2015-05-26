@@ -21,8 +21,7 @@ private:
     QString *text;
 
 public:
-    explicit Status(QString text, bool subDirs, bool change_file_name, bool change_directory_name, bool change_attributes,
-                    bool change_size, bool change_last_write, bool change_last_access, bool change_creation, bool change_sequrity);
+    explicit Status();
     ~Status();
 
     bool subDirs;
@@ -47,6 +46,15 @@ signals:
 
 public slots:
     void start();
+
+   void look_subdirs(bool);
+   void change_file_nameSlot(bool);
+   void change_attributesSlot(bool);
+   void change_sizeSlot(bool);
+   void change_last_writeSlot(bool);
+   void change_last_accessSlot(bool);
+   void change_creationSlot(bool);
+   void change_sequritySlot(bool);
 
 };
 

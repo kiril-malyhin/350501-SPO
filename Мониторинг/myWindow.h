@@ -21,7 +21,6 @@
 #include <QtTest/QtTest>
 #include <QFile>
 #include <QThread>
-#include "monitor.h"
 #include "mythread.h"
 #include "status.h"
 #include "name.h"
@@ -66,7 +65,6 @@ public:
     QCheckBox *change_creation;
     QCheckBox *change_sequrity;
     QString str,str1;
-    Monitor *monitor;
     QMutex mutex;
     QThread *thread;
     Status *status;
@@ -100,8 +98,9 @@ public slots:
 
             data->addItem("Ожидание изменений в заданной директории...");
 
+            //выбрать функцию, передать галочки в функцию, не работает путь, настроить файл, иконка в трее
 
-            Status *status = new Status(path->text(), true,true,true,true,true,true,true,true,true);
+            Status *status = new Status();
 
             QThread *thread = new QThread;
 
@@ -109,9 +108,8 @@ public slots:
 
             connect(thread, SIGNAL(started()), status, SLOT(start()));
             connect(status, SIGNAL(notification(QString)), this, SLOT(notificationReceived(QString)));
-            //thread->start();
 
-            Name *name = new Name(path->text(), true,true,true,true,true,true,true,true);
+            //thread->start();
 
             QThread *threadName = new QThread;
 
@@ -125,12 +123,12 @@ public slots:
             start->setEnabled(false);
             stop->setEnabled(true);
             enter_path->setEnabled(false);
-            catalog->setEnabled(false);
+            catalog->setEnabled(true);
 
             change_file_name->setEnabled(false);
 
             change_attributes->setEnabled(false);
-            change_size->setEnabled(false);
+            change_size->setEnabled(true);
             change_last_write->setEnabled(false);
             change_last_access->setEnabled(false);
             change_creation->setEnabled(false);
@@ -145,8 +143,8 @@ public slots:
 
         //thread->quit();
         //threadName->quit();
-        //не работают галочки и путь,удалить поток, создать иконку в трее, конвертация и настроить файл
-        data->addItem("Остановлено!");
+
+        /*data->addItem("Остановлено!");
         start->setEnabled(true);
         enter_path->setEnabled(true);
         stop->setEnabled(false);
@@ -159,7 +157,9 @@ public slots:
         change_last_write->setEnabled(true);
         change_last_access->setEnabled(true);
         change_creation->setEnabled(true);
-        change_sequrity->setEnabled(true);
+        change_sequrity->setEnabled(true);*/
+
+
     }
 
     void pathSlot()
@@ -241,6 +241,11 @@ public slots:
         vik->setText(Filename);
         vik->setForeground(Qt::darkGreen);
         data->addItem(vik);
+
+        QListWidgetItem *lop = new QListWidgetItem;
+        lop->setText("############################################");
+        lop->setForeground(Qt::darkGray);
+        data->addItem(lop);
 
         QDate dateToday = QDate::currentDate();
         QString str;

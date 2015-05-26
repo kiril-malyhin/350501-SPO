@@ -11,17 +11,72 @@
 #include <locale.h>
 #include <tchar.h>
 
-Status::Status(QString text, bool subDirs, bool change_file_name, bool change_directory_name, bool change_attributes,
-               bool change_size, bool change_last_write, bool change_last_access, bool change_creation, bool change_sequrity)
+Status::Status()
 {
+    subDirs = true;
+    change_file_name = true;
+   //change_file_name= FILE_NOTIFY_CHANGE_FILE_NAME;
+    change_attributes = true;
+   //change_attributes = FILE_NOTIFY_CHANGE_ATTRIBUTES;
+    change_size = true;
+   //change_size = FILE_NOTIFY_CHANGE_SIZE;
+    change_last_write = true;
+   //change_last_write = FILE_NOTIFY_CHANGE_LAST_WRITE;
+    change_last_access = true;
+   //change_last_access = FILE_NOTIFY_CHANGE_LAST_ACCESS;
+    change_creation = true;
+   //change_creation = FILE_NOTIFY_CHANGE_CREATION;
+    change_sequrity = true;
+
     this->text = new QString;
     this->text->append(text);
-
 }
 
 Status::~Status()
 {
 
+}
+
+void Status::look_subdirs(bool value)
+{
+    subDirs = value;
+    qDebug() << subDirs;
+}
+
+void Status::change_file_nameSlot(bool value)
+{
+
+    change_file_name = value;
+}
+
+void Status::change_attributesSlot(bool value)
+{
+    change_attributes = value;
+}
+
+void Status::change_sizeSlot(bool value)
+{
+    change_size = value;
+}
+
+void Status::change_last_writeSlot(bool value)
+{
+    change_last_write = value;
+}
+
+void Status::change_last_accessSlot(bool value)
+{
+    change_last_access = value;
+}
+
+void Status::change_creationSlot(bool value)
+{
+    change_creation = value;
+}
+
+void Status::change_sequritySlot(bool value)
+{
+    change_sequrity = value;
 }
 
 void Status::start(){
@@ -100,20 +155,20 @@ void Status::start(){
 
     if (dwChangeHandles[7] == INVALID_HANDLE_VALUE)
         ExitProcess(GetLastError());
-    change_file_name = true;
-                       change_directory_name  = true;
-                       change_attributes = true;
-                       change_size = true;
-                       change_last_write = true;
-                       change_last_access = true;
-                       change_creation = true;
-                       change_sequrity = true;
+
+    qDebug() << "Value from status:";
+    qDebug() << text;
+    qDebug() << change_file_name;
+    qDebug() << change_attributes;
+    qDebug() << change_size;
+    qDebug() << change_last_write;
+    qDebug() << change_last_access;
+    qDebug() << change_creation;
+    qDebug() << change_sequrity;
 
     while (TRUE)//C:/Qt
     {
-
         // Ждём уведомления.
-
 
         dwWaitStatus = WaitForMultipleObjects(8, dwChangeHandles,
                                               FALSE, INFINITE);
@@ -125,7 +180,7 @@ void Status::start(){
             if(change_file_name == true)
             {
 
-                status = "File was created, deleted or renamed!";
+                status = "File/folder was created, deleted or renamed!";
                 //qDebug() << status;
             }
             if( FindNextChangeNotification(dwChangeHandles[0]) == FALSE )
@@ -137,7 +192,7 @@ void Status::start(){
             if(change_directory_name == true)
             {
 
-                status = "Directory was created, deleted or renamed!";
+                status = "File/folder was created, deleted or renamed!";
                 //qDebug() << status;
 
             }

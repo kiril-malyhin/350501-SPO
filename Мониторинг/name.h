@@ -20,28 +20,31 @@ class Name : public QObject
 private:
     QString *text;
 public:
-    explicit Name(QString text, bool subDirs, bool change_file_name, bool change_attributes,
-                  bool change_size, bool change_last_write, bool change_last_access, bool change_creation, bool change_sequrity);
+    explicit Name();
     ~Name();
     bool subDirs;
     bool change_file_name;
-    //change_file_name= FILE_NOTIFY_CHANGE_FILE_NAME;
     bool change_attributes;
-    //change_attributes = FILE_NOTIFY_CHANGE_ATTRIBUTES;
     bool change_size;
-    //change_size = FILE_NOTIFY_CHANGE_SIZE;
     bool change_last_write;
-    //change_last_write = FILE_NOTIFY_CHANGE_LAST_WRITE;
     bool change_last_access;
-    //change_last_access = FILE_NOTIFY_CHANGE_LAST_ACCESS;
     bool change_creation;
-    //change_creation = FILE_NOTIFY_CHANGE_CREATION;
     bool change_sequrity;
 
 signals:
     void notificationAction(QString, QString);
 public slots:
     void start();
+    void look_subdirs(bool);
+    void change_file_nameSlot(bool);
+    void change_attributesSlot(bool);
+    void change_sizeSlot(bool);
+    void change_last_writeSlot(bool);
+    void change_last_accessSlot(bool);
+    void change_creationSlot(bool);
+    void change_sequritySlot(bool);
 };
+
+
 
 #endif // NAME_H

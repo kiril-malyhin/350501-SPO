@@ -2,7 +2,6 @@
 #define MYTHREAD_H
 
 #include <QThread>
-#include "monitor.h"
 #include "myWindow.h"
 class MyThread : public QThread
 {
@@ -14,7 +13,7 @@ public:
     // переменная для остановки потока
     bool Stop;
     QMutex myMutex;
-    Monitor *M;
+    //Monitor *M;
 signals:
 public slots:
 public:

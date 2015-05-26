@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
 
     window->show();
 
+
+    QObject::connect(window->stop, SIGNAL(clicked()), window, SLOT(close()));
     return a.exec();
 
 

@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/icon">
         <file>123.png</file>
+        <file>i_tilde_blue.png</file>
     </qresource>
 </RCC>

@@ -15,8 +15,9 @@
 #include <QFileDialog>
 #include <QFileSystemWatcher>
 #include <QListWidgetItem>
+#include "name.h"
+#include "status.h"
 
-#include "monitor.h"
 
 MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 {
@@ -42,7 +43,7 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
     start->setFixedSize(90,25);
     start->setEnabled(false);
 
-    stop = new QPushButton("Стоп");
+    stop = new QPushButton("Выход");
     stop->setFixedSize(90,25);
     stop->setEnabled(false);
 
@@ -114,22 +115,32 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
     setLayout(main);
     setWindowTitle("Мониторинг изменений файловой системы");
 
+    name = new Name;
+
+    connect(catalog, SIGNAL(toggled(bool)), name, SLOT(look_subdirs(bool)));
+    connect(change_file_name,SIGNAL(toggled(bool)), name, SLOT(change_file_nameSlot(bool)));
+    connect(change_attributes, SIGNAL(toggled(bool)), name, SLOT(change_attributesSlot(bool)));
+    connect(change_size, SIGNAL(toggled(bool)), name, SLOT(change_sizeSlot(bool)));
+    connect(change_last_write, SIGNAL(toggled(bool)), name, SLOT(change_last_writeSlot(bool)));
+    connect(change_last_access, SIGNAL(toggled(bool)), name, SLOT(change_last_accessSlot(bool)));
+    connect(change_creation, SIGNAL(toggled(bool)), name, SLOT(change_creationSlot(bool)));
+    connect(change_sequrity, SIGNAL(toggled(bool)), name, SLOT(change_sequritySlot(bool)));
+
+    status = new Status;
+
+    connect(catalog, SIGNAL(toggled(bool)), status, SLOT(look_subdirs(bool)));
+    connect(change_file_name,SIGNAL(toggled(bool)), status, SLOT(change_file_nameSlot(bool)));
+    connect(change_attributes, SIGNAL(toggled(bool)), status, SLOT(change_attributesSlot(bool)));
+    connect(change_size, SIGNAL(toggled(bool)), status, SLOT(change_sizeSlot(bool)));
+    connect(change_last_write, SIGNAL(toggled(bool)), status, SLOT(change_last_writeSlot(bool)));
+    connect(change_last_access, SIGNAL(toggled(bool)), status, SLOT(change_last_accessSlot(bool)));
+    connect(change_creation, SIGNAL(toggled(bool)), status, SLOT(change_creationSlot(bool)));
+    connect(change_sequrity, SIGNAL(toggled(bool)), status, SLOT(change_sequritySlot(bool)));
 
     connect(enter_path, SIGNAL(clicked()), this, SLOT(pathSlot()));
     connect(clear_window, SIGNAL(clicked()), this, SLOT(clearSlot()));
     connect(start, SIGNAL(clicked()), this, SLOT(startSlot()));
     connect(stop, SIGNAL(clicked()), this, SLOT(stopSlot()));
-
-    monitor = new Monitor();
-
-    connect(catalog, SIGNAL(toggled(bool)), monitor, SLOT(look_subdirs(bool)));
-    connect(change_file_name,SIGNAL(toggled(bool)), monitor, SLOT(change_file_nameSlot(bool)));
-    connect(change_attributes, SIGNAL(toggled(bool)), monitor, SLOT(change_attributesSlot(bool)));
-    connect(change_size, SIGNAL(toggled(bool)), monitor, SLOT(change_sizeSlot(bool)));
-    connect(change_last_write, SIGNAL(toggled(bool)), monitor, SLOT(change_last_writeSlot(bool)));
-    connect(change_last_access, SIGNAL(toggled(bool)), monitor, SLOT(change_last_accessSlot(bool)));
-    connect(change_creation, SIGNAL(toggled(bool)), monitor, SLOT(change_creationSlot(bool)));
-    connect(change_sequrity, SIGNAL(toggled(bool)), monitor, SLOT(change_sequritySlot(bool)));
 
     //connect(monitor, &Monitor::notification, this, &MyWindow::notificationReceived);
     //connect(monitor, &Monitor::notificationAction, this, &MyWindow::notificationReceived);
