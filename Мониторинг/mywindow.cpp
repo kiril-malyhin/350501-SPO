@@ -16,18 +16,18 @@
 #include <QFileSystemWatcher>
 #include <QListWidgetItem>
 #include "name.h"
-#include "status.h"
+
 
 
 MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 {
     MyWindow::setFont (QFont ("Courier", 10));
     setWindowIcon(QIcon(":/Images/3.png"));
-    setFixedSize(950,450);
+    setFixedSize(950,370);
 
     input_path = new QLineEdit();
     input_path->setStyleSheet("QLineEdit { background-color: lightgrey }");
-
+    input_path->setFixedSize(440,22);
     data = new QListWidget;
 
     path = new QLabel("<h2><font color = darkblue>Введите путь к папке или диску для слежения:</font></h2>");
@@ -39,7 +39,6 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
     catalog->setChecked(true);
 
     start = new QPushButton("Старт");
-    //start->setText(vall);
     start->setFixedSize(90,25);
     start->setEnabled(false);
 
@@ -49,20 +48,14 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
 
     clear_window = new QPushButton("Очистить окно вывода");
 
-    change_file_name = new QCheckBox("Изменение имени файла/папки");
-    change_file_name->setChecked(true);
-    change_attributes = new QCheckBox("Изменение любого атрибута файла/папки");
-    change_attributes->setChecked(true);
-    change_size = new QCheckBox("Изменение размера файла/папки");
-    change_size->setChecked(true);
-    change_last_write = new QCheckBox("Изменение времени доступа к файлу/папке");
-    change_last_write->setChecked(true);
-    change_last_access = new QCheckBox("Изменение времени записи");
-    change_last_access->setChecked(true);
-    change_creation = new QCheckBox("Изменение времени создания файла/папки");
-    change_creation->setChecked(true);
-    change_sequrity = new QCheckBox("Изменение содержимого дескриптора безопасности в наблюдаемой директории");
-    change_sequrity->setChecked(true);
+    add_file = new QCheckBox("Добавление файла/папки");
+    add_file->setChecked(true);
+    delete_file = new QCheckBox("Удаление файла/папки");
+    delete_file->setChecked(true);
+    rename_file = new QCheckBox("Изменение имени файла/папки");
+    rename_file->setChecked(true);
+    other_changes = new QCheckBox("Иные изменения файла/папки");
+    other_changes->setChecked(true);
 
     QHBoxLayout *layout_data = new QHBoxLayout;
     layout_data->addWidget(data);
@@ -86,13 +79,10 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
     layout_4->addWidget(crit);
 
     QVBoxLayout *end = new QVBoxLayout;
-    end->addWidget(change_file_name);
-    end->addWidget(change_attributes);
-    end->addWidget(change_size);
-    end->addWidget(change_last_write);
-    end->addWidget(change_last_access);
-    end->addWidget(change_creation);
-    end->addWidget(change_sequrity);
+    end->addWidget(add_file);
+    end->addWidget(delete_file);
+    end->addWidget(rename_file);
+    end->addWidget(other_changes);
     end->addWidget(clear_window);
 
     QVBoxLayout *left = new QVBoxLayout;
@@ -118,32 +108,14 @@ MyWindow::MyWindow(QWidget *parent): QDialog(parent)
     name = new Name;
 
     connect(catalog, SIGNAL(toggled(bool)), name, SLOT(look_subdirs(bool)));
-    connect(change_file_name,SIGNAL(toggled(bool)), name, SLOT(change_file_nameSlot(bool)));
-    connect(change_attributes, SIGNAL(toggled(bool)), name, SLOT(change_attributesSlot(bool)));
-    connect(change_size, SIGNAL(toggled(bool)), name, SLOT(change_sizeSlot(bool)));
-    connect(change_last_write, SIGNAL(toggled(bool)), name, SLOT(change_last_writeSlot(bool)));
-    connect(change_last_access, SIGNAL(toggled(bool)), name, SLOT(change_last_accessSlot(bool)));
-    connect(change_creation, SIGNAL(toggled(bool)), name, SLOT(change_creationSlot(bool)));
-    connect(change_sequrity, SIGNAL(toggled(bool)), name, SLOT(change_sequritySlot(bool)));
-
-    status = new Status;
-
-    connect(catalog, SIGNAL(toggled(bool)), status, SLOT(look_subdirs(bool)));
-    connect(change_file_name,SIGNAL(toggled(bool)), status, SLOT(change_file_nameSlot(bool)));
-    connect(change_attributes, SIGNAL(toggled(bool)), status, SLOT(change_attributesSlot(bool)));
-    connect(change_size, SIGNAL(toggled(bool)), status, SLOT(change_sizeSlot(bool)));
-    connect(change_last_write, SIGNAL(toggled(bool)), status, SLOT(change_last_writeSlot(bool)));
-    connect(change_last_access, SIGNAL(toggled(bool)), status, SLOT(change_last_accessSlot(bool)));
-    connect(change_creation, SIGNAL(toggled(bool)), status, SLOT(change_creationSlot(bool)));
-    connect(change_sequrity, SIGNAL(toggled(bool)), status, SLOT(change_sequritySlot(bool)));
+    connect(add_file,SIGNAL(toggled(bool)), name, SLOT(add_fileSlot(bool)));
+    connect(delete_file, SIGNAL(toggled(bool)), name, SLOT(delete_fileSlot(bool)));
+    connect(rename_file, SIGNAL(toggled(bool)), name, SLOT(rename_fileSlot(bool)));
+    connect(other_changes, SIGNAL(toggled(bool)), name, SLOT(other_changesSlot(bool)));
 
     connect(enter_path, SIGNAL(clicked()), this, SLOT(pathSlot()));
     connect(clear_window, SIGNAL(clicked()), this, SLOT(clearSlot()));
     connect(start, SIGNAL(clicked()), this, SLOT(startSlot()));
-    connect(stop, SIGNAL(clicked()), this, SLOT(stopSlot()));
-
-    //connect(monitor, &Monitor::notification, this, &MyWindow::notificationReceived);
-    //connect(monitor, &Monitor::notificationAction, this, &MyWindow::notificationReceived);
 }
 
 

@@ -18,31 +18,24 @@ class Name : public QObject
 {
     Q_OBJECT
 private:
-    QString *text;
+    QString *Text;
 public:
     explicit Name();
     ~Name();
     bool subDirs;
-    bool change_file_name;
-    bool change_attributes;
-    bool change_size;
-    bool change_last_write;
-    bool change_last_access;
-    bool change_creation;
-    bool change_sequrity;
-
+    bool add_file;
+    bool delete_file;
+    bool rename_file;
+    bool other_changes;
 signals:
     void notificationAction(QString, QString);
 public slots:
     void start();
     void look_subdirs(bool);
-    void change_file_nameSlot(bool);
-    void change_attributesSlot(bool);
-    void change_sizeSlot(bool);
-    void change_last_writeSlot(bool);
-    void change_last_accessSlot(bool);
-    void change_creationSlot(bool);
-    void change_sequritySlot(bool);
+    void add_fileSlot(bool);
+    void delete_fileSlot(bool);
+    void rename_fileSlot(bool);
+    void other_changesSlot(bool);
 };
 
 

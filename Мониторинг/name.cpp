@@ -14,16 +14,10 @@
 Name::Name()
 {
     subDirs = true;
-    change_file_name = true;
-    change_attributes = true;
-    change_size = true;
-    change_last_write = true;
-    change_last_access = true;
-    change_creation = true;
-    change_sequrity = true;
-
-    this->text = new QString;
-    this->text->append(text);
+    add_file = true;
+    delete_file = true;
+    rename_file = true;
+    other_changes = true;
 
 }
 
@@ -34,44 +28,33 @@ void Name::look_subdirs(bool value)
     qDebug() << subDirs;
 }
 
-void Name::change_file_nameSlot(bool value)
+void Name::add_fileSlot(bool value)
 {
-    change_file_name = value;
+    add_file = value;
+    qDebug() << "add_file:";
+    qDebug() << add_file;
 }
 
-void Name::change_attributesSlot(bool value)
+void Name::delete_fileSlot(bool value)
 {
-    change_attributes = value;
+    delete_file = value;
+    qDebug() << "delete_file:";
+    qDebug() << delete_file;
 }
 
-void Name::change_sizeSlot(bool value)
+void Name::rename_fileSlot(bool value)
 {
-    change_size = value;
-    qDebug() << "change_size:";
-    qDebug() << change_size;
-
+    rename_file = value;
+    qDebug() << "rename_file:";
+    qDebug() << rename_file;
 }
 
-void Name::change_last_writeSlot(bool value)
+void Name::other_changesSlot(bool value)
 {
-    change_last_write = value;
+    other_changes = value;
+    qDebug() << "other_changes:";
+    qDebug() << other_changes;
 }
-
-void Name::change_last_accessSlot(bool value)
-{
-    change_last_access = value;
-}
-
-void Name::change_creationSlot(bool value)
-{
-    change_creation = value;
-}
-
-void Name::change_sequritySlot(bool value)
-{
-    change_sequrity = value;
-}
-
 
 Name::~Name()
 {
@@ -96,30 +79,17 @@ void Name::start()
     //text.toWCharArray(path);
 
     HANDLE hDir = CreateFile(path,
-         FILE_LIST_DIRECTORY | STANDARD_RIGHTS_READ,
-         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-         NULL,
-         OPEN_EXISTING,
-         FILE_FLAG_BACKUP_SEMANTICS,
-         NULL);
+                             FILE_LIST_DIRECTORY | STANDARD_RIGHTS_READ,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                             NULL,
+                             OPEN_EXISTING,
+                             FILE_FLAG_BACKUP_SEMANTICS,
+                             NULL);
 
-    //qDebug() << path;
     if (!hDir || hDir == INVALID_HANDLE_VALUE)
     {
         wprintf(L"CreateFile failed\n");
     }
-
-    qDebug() << "Value from name:";
-    qDebug() << subDirs;
-    qDebug() << change_file_name;
-    qDebug() << change_attributes;
-    qDebug() << change_size;
-    qDebug() << change_last_write;
-    qDebug() << change_last_access;
-    qDebug() << change_creation;
-    qDebug() << change_sequrity;
-
-
 
     while (TRUE)
     {
@@ -144,80 +114,167 @@ void Name::start()
 
             for (fni = (FILE_NOTIFY_INFORMATION*)buf; fni;)
             {
+
                 switch (fni->Action)
-                                {
-                                case FILE_ACTION_ADDED:
-                                    wcscpy_s(action, sizeof(action) / sizeof(*action), L"File added:");
-                                    break;
-
-                                case FILE_ACTION_REMOVED:
-                                    wcscpy_s(action, sizeof(action) / sizeof(*action), L"File removed:");
-                                    break;
-
-                                case FILE_ACTION_MODIFIED:
-                                    wcscpy_s(action, sizeof(action) / sizeof(*action), L"File modified:");
-                                    break;
-
-                                case FILE_ACTION_RENAMED_OLD_NAME:
-                                    wcscpy_s(action, sizeof(action) / sizeof(*action), L"File renamed, was:");
-                                    break;
-
-                                case FILE_ACTION_RENAMED_NEW_NAME:
-                                    wcscpy_s(action, sizeof(action) / sizeof(*action), L"File renamed, now is:");
-                                    break;
-
-                                default:
-                                    swprintf_s(action, sizeof(action) / sizeof(*action), L"Unkonwn action: %ld. File name is:", fni->Action);
-                                }
-                //swprintf_s(action, sizeof(action) / sizeof(*action), L"File/folder name is:", fni->Action);
-                if (fni->FileNameLength)
                 {
-                    wcsncpy_s(filename, MAX_PATH, fni->FileName, fni->FileNameLength / 2);
-                    filename[fni->FileNameLength / 2] = 0;
-                    wprintf(L"%s '%s'\n", action, filename);
+                case FILE_ACTION_ADDED:
+                    wcscpy_s(action, sizeof(action) / sizeof(*action), L"File/folder added:");
+                    if(add_file == true)
+                    {
+                        if (fni->FileNameLength)
+                        {
+                            wcsncpy_s(filename, MAX_PATH, fni->FileName, fni->FileNameLength / 2);
+                            filename[fni->FileNameLength / 2] = 0;
+
+
+                        }
+                        else
+                        {
+                            wprintf(L"%s <EMPTY>\n", action);
+                        }
+
+                        if (fni->NextEntryOffset)
+                        {
+                            char *p = (char*)fni;
+                            fni = (FILE_NOTIFY_INFORMATION*)(p + fni->NextEntryOffset);
+                        }
+                        else
+                        {
+                            fni = NULL;
+                        }
+                        QString Action = QString::fromWCharArray(action, -1);
+                        QString Filename = QString::fromWCharArray(filename, -1);
+                        emit notificationAction(Action,Filename);
+
+                    }
+                    break;
+
+                case FILE_ACTION_REMOVED:
+                    wcscpy_s(action, sizeof(action) / sizeof(*action), L"File/folder removed:");
+                    if(delete_file == true)
+                    {
+                        if (fni->FileNameLength)
+                        {
+                            wcsncpy_s(filename, MAX_PATH, fni->FileName, fni->FileNameLength / 2);
+                            filename[fni->FileNameLength / 2] = 0;
+
+
+                        }
+                        else
+                        {
+                            wprintf(L"%s <EMPTY>\n", action);
+                        }
+
+                        if (fni->NextEntryOffset)
+                        {
+                            char *p = (char*)fni;
+                            fni = (FILE_NOTIFY_INFORMATION*)(p + fni->NextEntryOffset);
+                        }
+                        else
+                        {
+                            fni = NULL;
+                        }
+                        QString Action = QString::fromWCharArray(action, -1);
+                        QString Filename = QString::fromWCharArray(filename, -1);
+                        emit notificationAction(Action,Filename);
+                    }
+                    break;
+
+                case FILE_ACTION_MODIFIED:
+                    wcscpy_s(action, sizeof(action) / sizeof(*action), L"File/folder modified:");
+                    if(other_changes == true)
+                    {
+
+
+                        if (fni->FileNameLength)
+                        {
+                            wcsncpy_s(filename, MAX_PATH, fni->FileName, fni->FileNameLength / 2);
+                            filename[fni->FileNameLength / 2] = 0;
+
+                        }
+                        else
+                        {
+                            wprintf(L"%s <EMPTY>\n", action);
+                        }
+
+                        if (fni->NextEntryOffset)
+                        {
+                            char *p = (char*)fni;
+                            fni = (FILE_NOTIFY_INFORMATION*)(p + fni->NextEntryOffset);
+                        }
+                        else
+                        {
+                            fni = NULL;
+                        }
+                        QString Action = QString::fromWCharArray(action, -1);
+                        QString Filename = QString::fromWCharArray(filename, -1);
+                        emit notificationAction(Action,Filename);
+                    }
+                    break;
+
+                case FILE_ACTION_RENAMED_OLD_NAME:
+                    wcscpy_s(action, sizeof(action) / sizeof(*action), L"File/folder renamed, was:");
+                    if(rename_file == true)
+                    {
+                        if (fni->FileNameLength)
+                        {
+                            wcsncpy_s(filename, MAX_PATH, fni->FileName, fni->FileNameLength / 2);
+                            filename[fni->FileNameLength / 2] = 0;
+
+                        }
+                        else
+                        {
+                            wprintf(L"%s <EMPTY>\n", action);
+                        }
+
+                        if (fni->NextEntryOffset)
+                        {
+                            char *p = (char*)fni;
+                            fni = (FILE_NOTIFY_INFORMATION*)(p + fni->NextEntryOffset);
+                        }
+                        else
+                        {
+                            fni = NULL;
+                        }
+                        QString Action = QString::fromWCharArray(action, -1);
+                        QString Filename = QString::fromWCharArray(filename, -1);
+                        emit notificationAction(Action,Filename);
+                    }
+                    break;
+
+                case FILE_ACTION_RENAMED_NEW_NAME:
+                    wcscpy_s(action, sizeof(action) / sizeof(*action), L"File/folder renamed, now is:");
+                    if(rename_file == true)
+                    {
+                        if (fni->FileNameLength)
+                        {
+                            wcsncpy_s(filename, MAX_PATH, fni->FileName, fni->FileNameLength / 2);
+                            filename[fni->FileNameLength / 2] = 0;
+
+
+                        }
+                        else
+                        {
+                            wprintf(L"%s <EMPTY>\n", action);
+                        }
+
+                        if (fni->NextEntryOffset)
+                        {
+                            char *p = (char*)fni;
+                            fni = (FILE_NOTIFY_INFORMATION*)(p + fni->NextEntryOffset);
+                        }
+                        else
+                        {
+                            fni = NULL;
+                        }
+                        QString Action = QString::fromWCharArray(action, -1);
+                        QString Filename = QString::fromWCharArray(filename, -1);
+                        emit notificationAction(Action,Filename);
+
+                    }
+                    break;
 
                 }
-                else
-                {
-                    wprintf(L"%s <EMPTY>\n", action);
-                }
-
-                if (fni->NextEntryOffset)
-                {
-                    char *p = (char*)fni;
-                    fni = (FILE_NOTIFY_INFORMATION*)(p + fni->NextEntryOffset);
-                }
-                else
-                {
-                    fni = NULL;
-                }
-
-                QString Action = QString::fromWCharArray(action, -1);
-                QString Filename = QString::fromWCharArray(filename, -1);
-
-
-
-                if(change_file_name == true)
-                {Sleep(100);
-                    emit notificationAction(Action,Filename);break;}
-                if(change_attributes == true)
-                {Sleep(100);
-                    emit notificationAction(Action,Filename);break;}
-                if(change_size == true)
-                {Sleep(100);
-                    emit notificationAction(Action,Filename);break;}
-                if(change_last_write == true)
-                {Sleep(100);
-                    emit notificationAction(Action,Filename);break;}
-                if(change_last_access == true)
-                {Sleep(100);
-                    emit notificationAction(Action,Filename);break;}
-                if(change_creation == true)
-                {Sleep(100);
-                    emit notificationAction(Action,Filename);break;}
-                if(change_sequrity == true)
-                {Sleep(100);
-                    emit notificationAction(Action,Filename);break;}
 
             }
         }

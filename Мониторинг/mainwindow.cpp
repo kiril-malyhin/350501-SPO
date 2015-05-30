@@ -11,10 +11,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    trayIcon = new QSystemTrayIcon(this);
-    QIcon icon(":/icon/i_tilde_blue.png");
-    trayIcon->setIcon(icon);
-    trayIcon->show();
 
 }
 
